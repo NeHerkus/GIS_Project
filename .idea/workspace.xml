@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f87402f0-c098-44ff-9705-e4af9dd2275b" name="Default Changelist" comment="Add SelectionLab, ImageTiler and StyleLab">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/StyleLab.java" afterDir="false" />
+    <list default="true" id="f87402f0-c098-44ff-9705-e4af9dd2275b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/tool/GISTool.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/raster/ImageLab.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/raster/ImageLab.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -20,20 +21,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2482">
-              <caret line="151" column="38" selection-start-line="151" selection-start-column="38" selection-end-line="151" selection-end-column="38" />
+            <state relative-caret-position="425">
+              <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/StyleLab.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="48" selection-start-line="7" selection-start-column="48" selection-end-line="7" selection-end-column="48" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/StyleLab.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/tool/GISTool.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="191">
-              <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="578">
+              <caret line="34" column="41" lean-forward="true" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -41,10 +48,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2372">
-              <caret line="153" column="53" selection-start-line="153" selection-start-column="53" selection-end-line="153" selection-end-column="53" />
+            <state relative-caret-position="884">
+              <caret line="60" lean-forward="true" selection-start-line="60" selection-end-line="60" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#2139#2163#0" expanded="true" />
+                <element signature="e#5234#5554#0" expanded="true" />
                 <element signature="e#5553#5554#0" expanded="true" />
               </folding>
             </state>
@@ -54,11 +63,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/raster/ImageLab.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1139">
-              <caret line="107" column="40" selection-start-line="107" selection-start-column="40" selection-end-line="107" selection-end-column="40" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="119">
+              <caret line="7" column="22" lean-forward="true" selection-end-line="279" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -106,11 +112,13 @@
       <list>
         <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/quickstart/Quickstart.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/filter/QueryLab.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/raster/ImageLab.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/StyleLab.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/coverage/ImageTiler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/map/Map.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/raster/ImageLab.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/tool/GISTool.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java" />
       </list>
     </option>
   </component>
@@ -224,7 +232,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554098421791" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554104549937" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Libraries" />
@@ -310,7 +318,7 @@
       <workItem from="1553581143274" duration="591000" />
       <workItem from="1553947980177" duration="1448000" />
       <workItem from="1554094566029" duration="2646000" />
-      <workItem from="1554097439386" duration="979000" />
+      <workItem from="1554097439386" duration="2587000" />
     </task>
     <task id="LOCAL-00001" summary="Tutorial step #1">
       <created>1553453962720</created>
@@ -326,11 +334,18 @@
       <option name="project" value="LOCAL" />
       <updated>1553493582700</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Add SelectionLab and StyleLab">
+      <created>1554098444990</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1554098444991</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="20300000" />
+    <option name="totallyTimeSpent" value="21908000" />
   </component>
   <component name="TodoView" selected-index="4">
     <todo-panel id="selected-file">
@@ -364,7 +379,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Terminal" order="10" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="12" visible="true" weight="0.3261105" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.3261105" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -376,7 +391,7 @@
       <window_info anchor="right" id="Palette&#9;" order="8" />
     </layout>
     <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12686567" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13219616" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -414,7 +429,8 @@
     <MESSAGE value="Tutorial step #1" />
     <MESSAGE value="Add QueryLab and ImageLab" />
     <MESSAGE value="Add SelectionLab, ImageTiler and StyleLab" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add SelectionLab, ImageTiler and StyleLab" />
+    <MESSAGE value="Add SelectionLab and StyleLab" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add SelectionLab and StyleLab" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/App.java" />
@@ -422,16 +438,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
           <caret line="18" column="33" lean-forward="true" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/raster/ImageLab.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1139">
-          <caret line="107" column="40" selection-start-line="107" selection-start-column="40" selection-end-line="107" selection-end-column="40" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -449,24 +455,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2372">
-          <caret line="153" column="53" selection-start-line="153" selection-start-column="53" selection-end-line="153" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5553#5554#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2482">
-          <caret line="151" column="38" selection-start-line="151" selection-start-column="38" selection-end-line="151" selection-end-column="38" />
         </state>
       </provider>
     </entry>
@@ -496,13 +484,61 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/map/Map.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9291">
+          <caret line="34" column="44" selection-start-line="34" selection-start-column="44" selection-end-line="34" selection-end-column="44" />
+          <folding>
+            <element signature="e#1927#1958#0" expanded="true" />
+            <element signature="e#6522#6523#0" expanded="true" />
+            <element signature="e#6636#6637#0" expanded="true" />
+            <element signature="e#7160#7161#0" expanded="true" />
+            <element signature="e#7277#7278#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/GISTool.java">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/StyleLab.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
+        <state relative-caret-position="119">
+          <caret line="7" column="48" selection-start-line="7" selection-start-column="48" selection-end-line="7" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/raster/ImageLab.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="22" lean-forward="true" selection-end-line="279" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/style/SelectionLab.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="884">
+          <caret line="60" lean-forward="true" selection-start-line="60" selection-end-line="60" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#2139#2163#0" expanded="true" />
+            <element signature="e#5234#5554#0" expanded="true" />
+            <element signature="e#5553#5554#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/geotools/tutorial/tool/GISTool.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="34" column="41" lean-forward="true" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
         </state>
       </provider>
     </entry>

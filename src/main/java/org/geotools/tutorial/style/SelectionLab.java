@@ -56,6 +56,7 @@ import org.opengis.filter.identity.FeatureId;
  * In this example we create a map tool to select a feature clicked with the mouse. The selected
  * feature will be painted yellow.
  */
+@SuppressWarnings("ALL")
 public class SelectionLab {
 
     /*

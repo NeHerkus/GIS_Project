@@ -1,4 +1,4 @@
-package org.geotools.tutorial.raster;
+package org.geotools.tutorial.tool;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -42,7 +42,7 @@ import org.geotools.factory.Hints;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.style.ContrastMethod;
 
-public class ImageLab {
+public class GISTool {
 
     private StyleFactory sf = CommonFactoryFinder.getStyleFactory();
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
@@ -51,7 +51,7 @@ public class ImageLab {
     private GridCoverage2DReader reader;
 
     public static void main(String[] args) throws Exception {
-        ImageLab me = new ImageLab();
+        GISTool me = new GISTool();
         me.getLayersAndDisplay();
     }
 
