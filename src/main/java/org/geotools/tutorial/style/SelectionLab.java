@@ -1,12 +1,3 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2006-2008, Open Source Geospatial Foundation (OSGeo)
- *
- *    This file is hereby placed into the Public Domain. This means anyone is
- *    free to do whatever they wish with this file. Use it well and enjoy!
- */
 package org.geotools.tutorial.style;
 
 import java.awt.Color;
@@ -55,6 +46,10 @@ import org.opengis.filter.identity.FeatureId;
 /**
  * In this example we create a map tool to select a feature clicked with the mouse. The selected
  * feature will be painted yellow.
+ *
+ * @source $URL:
+ *     http://svn.osgeo.org/geotools/trunk/demo/example/src/main/java/org/geotools/demo/SelectionLab.java
+ *     $
  */
 @SuppressWarnings("ALL")
 public class SelectionLab {
@@ -141,7 +136,7 @@ public class SelectionLab {
         /*
          * When the user clicks the button we want to enable
          * our custom feature selection tool. Since the only
-         * mouse action we are intersted in is 'clicked', and
+         * mouse action we are interested in is 'clicked', and
          * we are not creating control icons or cursors here,
          * we can just create our tool as an anonymous sub-class
          * of CursorTool.
@@ -170,7 +165,7 @@ public class SelectionLab {
      */
     void selectFeatures(MapMouseEvent ev) {
 
-        System.out.println("Mouse click at: " + ev.getMapPosition());
+        System.out.println("Mouse click at: " + ev.getWorldPos());
 
         /*
          * Construct a 5x5 pixel rectangle centred on the mouse click position

@@ -1,14 +1,14 @@
 package org.geotools.tutorial.tool;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.*;
 
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -17,114 +17,89 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.Parameter;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.gce.geotiff.GeoTiffFormat;
+//import org.geotools.factory.Hints;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.map.StyleLayer;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.ContrastEnhancement;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.SLD;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
+import org.geotools.styling.*;
+import org.geotools.styling.Stroke;
 import org.geotools.swing.JMapFrame;
+//import org.geotools.swing.action.ResetAction;
 import org.geotools.swing.action.SafeAction;
-import org.geotools.swing.data.JParameterListWizard;
-import org.geotools.swing.wizard.JWizard;
-import org.geotools.util.KVP;
-import org.geotools.factory.Hints;
+import org.geotools.swing.data.JFileDataStoreChooser;
+import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.tool.CursorTool;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.identity.FeatureId;
+import org.geotools.tutorial.filter.QueryLabMod;
 import org.opengis.style.ContrastMethod;
 
+@SuppressWarnings("Duplicates")
 public class GISTool {
 
+    private static Point startScreenPos, endScreenPos;
+    private ReferencedEnvelope selectedArea;
     private StyleFactory sf = CommonFactoryFinder.getStyleFactory();
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
     private JMapFrame frame;
     private GridCoverage2DReader reader;
 
-    public static void main(String[] args) throws Exception {
-        GISTool me = new GISTool();
-        me.getLayersAndDisplay();
-    }
-
-    /**
-     * Prompts the user for a GeoTIFF file and a Shapefile and passes them to the displayLayers
-     * method
+    /*
+     * Convenient constants for the type of feature geometry in the shapefile
      */
-    private void getLayersAndDisplay() throws Exception {
-        List<Parameter<?>> list = new ArrayList<>();
-        list.add(
-                new Parameter<>(
-                        "image",
-                        File.class,
-                        "Image",
-                        "GeoTiff or World+Image to display as basemap",
-                        new KVP(Parameter.EXT, "tif", Parameter.EXT, "jpg")));
-        list.add(
-                new Parameter<>(
-                        "shape",
-                        File.class,
-                        "Shapefile",
-                        "Shapefile contents to display",
-                        new KVP(Parameter.EXT, "shp")));
-
-        JParameterListWizard wizard =
-                new JParameterListWizard("Image Lab", "Fill in the following layers", list);
-        int finish = wizard.showModalDialog();
-
-        if (finish != JWizard.FINISH) {
-            System.exit(0);
-        }
-        File imageFile = (File) wizard.getConnectionParameters().get("image");
-        File shapeFile = (File) wizard.getConnectionParameters().get("shape");
-        displayLayers(imageFile, shapeFile);
+    private enum GeomType {
+        POINT,
+        LINE,
+        POLYGON
     }
+
+    /*
+     * Some default style variables
+     */
+    private static final Color LINE_COLOUR = Color.BLACK;
+    private static final Color FILL_COLOUR = Color.BLACK;
+    private static final Color SELECTED_COLOUR = Color.CYAN;
+    private static final float DEFAULT_OPACITY = 0.0f;
+    private static final float OPACITY = 0.5f;
+    private static final float LINE_WIDTH = 1.0f;
+    private static final float POINT_SIZE = 2.0f;
+
+    private SimpleFeatureSource featureSource;
+
+    private String geometryAttributeName;
+    private GISTool.GeomType geometryType;
+
+    QueryLabMod queryLab;
+    MapContent map = new MapContent();
+    FileDataStore store;
+
+    public static void main(String[] args) throws Exception {
+        GISTool gisTool = new GISTool();
+        gisTool.displayLayers();
+    }
+
 
     /**
      * Displays a GeoTIFF file overlaid with a Shapefile
-     *
-     * @param rasterFile the GeoTIFF file
-     * @param shpFile    the Shapefile
      */
-    private void displayLayers(File rasterFile, File shpFile) throws Exception {
-        AbstractGridFormat format = GridFormatFinder.findFormat(rasterFile);
-        // this is a bit hacky but does make more geotiffs work
-        Hints hints = new Hints();
-        if (format instanceof GeoTiffFormat) {
-            hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
-        }
-        reader = format.getReader(rasterFile, hints);
-
-        // Initially display the raster in greyscale using the
-        // data from the first image band
-        Style rasterStyle = createRGBStyle();
-
-        // Connect to the shapefile
-        FileDataStore dataStore = FileDataStoreFinder.getDataStore(shpFile);
-        SimpleFeatureSource shapefileSource = dataStore.getFeatureSource();
-
-        // Create a basic style with yellow lines and no fill
-        Style shpStyle = SLD.createPolygonStyle(Color.YELLOW, null, 0.0f);
-
-        // Set up a MapContent with the two layers
-        final MapContent map = new MapContent();
-        map.setTitle("ImageLab");
-
-        Layer rasterLayer = new GridReaderLayer(reader, rasterStyle);
-        map.addLayer(rasterLayer);
-
-        Layer shpLayer = new FeatureLayer(shapefileSource, shpStyle);
-        map.addLayer(shpLayer);
+    private void displayLayers() throws Exception {
 
         // Create a JMapFrame with a menu to choose the display style for the
+        map.setTitle("GIS Application");
         frame = new JMapFrame(map);
         frame.enableLayerTable(true);
         frame.setSize(800, 600);
@@ -134,10 +109,25 @@ public class GISTool {
 
         JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
-        JMenu menu = new JMenu("Raster");
-        menuBar.add(menu);
 
-        menu.add(
+        JMenu layerMenu = new JMenu("Layer");
+        menuBar.add(layerMenu);
+        layerMenu.add(
+                new SafeAction("Add shape file") {
+                    public void action(ActionEvent e) throws Throwable {
+                        addShapeLayer();
+                    }
+                });
+        layerMenu.add(
+                new SafeAction("Add raster file") {
+                    public void action(ActionEvent e) throws Throwable {
+                        addRasterLayer();
+                    }
+                });
+
+        JMenu rasterMenu = new JMenu("Raster");
+        menuBar.add(rasterMenu);
+        rasterMenu.add(
                 new SafeAction("Grayscale display") {
                     public void action(ActionEvent e) throws Throwable {
                         Style style = createGreyscaleStyle();
@@ -147,8 +137,7 @@ public class GISTool {
                         }
                     }
                 });
-
-        menu.add(
+        rasterMenu.add(
                 new SafeAction("RGB display") {
                     public void action(ActionEvent e) throws Throwable {
                         Style style = createRGBStyle();
@@ -158,9 +147,106 @@ public class GISTool {
                         }
                     }
                 });
+        /*
+         * Before making the map frame visible we add a new button to its
+         * toolbar for our custom feature selection tool
+         */
+        JToolBar toolBar = frame.getToolBar();
+        JButton SelectButton = new JButton("Select");
+        toolBar.addSeparator();
+        toolBar.add(SelectButton);
+
+        JButton QueryButton = new JButton("Query");
+        toolBar.addSeparator();
+        toolBar.add(QueryButton);
+
+        /*
+         * When the user clicks the button we want to enable
+         * our custom feature selection tool. Since the only
+         * mouse action we are interested in is 'clicked', and
+         * we are not creating control icons or cursors here,
+         * we can just create our tool as an anonymous sub-class
+         * of CursorTool.
+         */
+        SelectButton.addActionListener(
+                e ->
+                        frame.getMapPane()
+                                .setCursorTool(
+                                        new CursorTool() {
+
+                                            @Override
+                                            public void onMouseClicked(MapMouseEvent ev) {
+                                                selectFeatures(ev);
+                                            }
+                                            @Override
+                                            public void onMousePressed(MapMouseEvent ev) {
+                                                System.out.println("Mouse press at: " + ev.getWorldPos());
+                                                startScreenPos = ev.getPoint();
+                                            }
+                                            @Override
+                                            public void onMouseReleased(MapMouseEvent ev) {
+                                                selectBoxFeatures(ev);
+                                            }
+                                        }));
+        queryLab = new QueryLabMod();
+        queryLab.setTitle("Query");
+        QueryButton.addActionListener(e -> {
+            // display the query frame when the button is pressed
+            if(store != null)
+                initQueryLabModified();
+            queryLab.setVisible(true);
+
+        });
+        //JButton ResetButton = new JButton(new ResetAction(frame.getMapPane()));
+        //ResetButton.setName("ToolbarResetButton");
+
         // Finally display the map frame.
         // When it is closed the app will exit.
+        frame.getMapPane().repaint();
         frame.setVisible(true);
+    }
+
+    private void addRasterLayer() throws Exception {
+
+        File file = JFileDataStoreChooser.showOpenFile("jpg", null);
+        if (file == null) {
+            return;
+        }
+
+        AbstractGridFormat format = GridFormatFinder.findFormat(file);
+//        // this is a bit hacky but does make more geotiffs work
+//        Hints hints = new Hints();
+//        if (format instanceof GeoTiffFormat) {
+//            hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
+//        }
+        reader = format.getReader(file); //add second parameter hints for top code
+
+        // Initially display the raster in RGB
+        Style rasterStyle = createRGBStyle();
+        Layer rasterLayer = new GridReaderLayer(reader, rasterStyle);
+        map.addLayer(rasterLayer);
+    }
+
+    private void addShapeLayer() throws Exception {
+
+        File file = JFileDataStoreChooser.showOpenFile("shp", null);
+        if (file == null) {
+            return;
+        }
+
+        store = FileDataStoreFinder.getDataStore(file);
+        SimpleFeatureSource shapeFileSource = store.getFeatureSource();
+
+        featureSource = store.getFeatureSource();
+        setGeometry();
+
+        // Create a default style
+        Style shpStyle = createDefaultStyle();
+
+        Layer shpLayer = new FeatureLayer(shapeFileSource, shpStyle);
+        map.addLayer(shpLayer);
+        Set<FeatureId> IDs = new HashSet<>();
+        displaySelectedFeatures(IDs);
     }
 
     /**
@@ -276,5 +362,266 @@ public class GISTool {
         sym.setChannelSelection(sel);
 
         return SLD.wrapSymbolizers(sym);
+    }
+    /**
+     * This method is called by our feature selection tool when the user has clicked on the map.
+     *
+     * @param ev the mouse event being handled
+     */
+    void selectFeatures(MapMouseEvent ev) {
+
+        System.out.println("Mouse click at: " + ev.getWorldPos());
+
+        /*
+         * Construct a 5x5 pixel rectangle centred on the mouse click position
+         */
+        Point screenPos = ev.getPoint();
+        Rectangle screenRect = new Rectangle(screenPos.x - 2, screenPos.y - 2, 5, 5);
+
+        /*
+         * Transform the screen rectangle into bounding box in the coordinate
+         * reference system of our map context. Note: we are using a naive method
+         * here but GeoTools also offers other, more accurate methods.
+         */
+        AffineTransform screenToWorld = frame.getMapPane().getScreenToWorldTransform();
+        Rectangle2D worldRect = screenToWorld.createTransformedShape(screenRect).getBounds2D();
+        ReferencedEnvelope bbox =
+                new ReferencedEnvelope(
+                        worldRect, frame.getMapContent().getCoordinateReferenceSystem());
+
+        /*
+         * Create a Filter to select features that intersect with
+         * the bounding box
+         */
+        Filter filter = ff.intersects(ff.property(geometryAttributeName), ff.literal(bbox));
+
+        /*
+         * Use the filter to identify the selected features
+         */
+        try {
+            SimpleFeatureCollection selectedFeatures = featureSource.getFeatures(filter);
+            initQueryLabModified();
+            queryLab.filterSelectedFeatures(selectedFeatures);
+            queryLab.setVisible(true);
+
+            Set<FeatureId> IDs = new HashSet<>();
+            try (SimpleFeatureIterator iter = selectedFeatures.features()) {
+                while (iter.hasNext()) {
+                    SimpleFeature feature = iter.next();
+                    IDs.add(feature.getIdentifier());
+
+                    System.out.println("   " + feature.getIdentifier());
+                }
+            }
+
+            if (IDs.isEmpty()) {
+                System.out.println("   no feature selected");
+            }
+
+            displaySelectedFeatures(IDs);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     *MousePressed and MouseReleased select
+     */
+    void selectBoxFeatures(MapMouseEvent ev)
+    {
+        System.out.println("Mouse release at: " + ev.getWorldPos());
+        int x1, x2, y1, y2;
+
+        endScreenPos = ev.getPoint();
+
+        if(endScreenPos.x > startScreenPos.x){
+            x1 = startScreenPos.x;
+            x2 = endScreenPos.x;}
+        else{
+            x1 = endScreenPos.x;
+            x2 = startScreenPos.x;}
+        if(endScreenPos.y > startScreenPos.y){
+            y1 = endScreenPos.y;
+            y2 = startScreenPos.y;}
+        else{
+            y1 = startScreenPos.y;
+            y2 = endScreenPos.y;}
+        Rectangle screenRect = new Rectangle(x1, y2, x2 - x1, y1 - y2);
+        /*
+         * Transform the screen rectangle into bounding box in the coordinate
+         * reference system of our map context. Note: we are using a naive method
+         * here but GeoTools also offers other, more accurate methods.
+         */
+        AffineTransform screenToWorld = frame.getMapPane().getScreenToWorldTransform();
+        Rectangle2D worldRect = screenToWorld.createTransformedShape(screenRect).getBounds2D();
+        ReferencedEnvelope bbox =
+                new ReferencedEnvelope(
+                        worldRect, frame.getMapContent().getCoordinateReferenceSystem());
+
+        /*
+         * Create a Filter to select features that intersect with
+         * the bounding box
+         */
+        Filter filter = ff.intersects(ff.property(geometryAttributeName), ff.literal(bbox));
+
+        /*
+         * Use the filter to identify the selected features
+         */
+        try {
+            SimpleFeatureCollection selectedFeatures = featureSource.getFeatures(filter);
+            initQueryLabModified();
+            queryLab.filterSelectedFeatures(selectedFeatures);
+            queryLab.setVisible(true);
+
+            Set<FeatureId> IDs = new HashSet<>();
+            try (SimpleFeatureIterator iter = selectedFeatures.features()) {
+                while (iter.hasNext()) {
+                    SimpleFeature feature = iter.next();
+                    IDs.add(feature.getIdentifier());
+
+                    System.out.println("   " + feature.getIdentifier());
+                }
+            }
+
+            if (IDs.isEmpty()) {
+                System.out.println("   no feature selected");
+            }
+
+            displaySelectedFeatures(IDs);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    /**
+     * Sets the display to paint selected features yellow and unselected features in the default
+     * style.
+     *
+     * @param IDs identifiers of currently selected features
+     */
+    public void displaySelectedFeatures(Set<FeatureId> IDs) {
+        Style style;
+
+        if (IDs.isEmpty()) {
+            style = createDefaultStyle();
+
+        } else {
+            style = createSelectedStyle(IDs);
+        }
+//        List<Layer> layers = frame.getMapContent().layers();
+//        while (!layers.isEmpty())
+//        {
+//            Layer layer = layers.get(layers.lastIndexOf(layers));
+//            ((FeatureLayer) layer).setStyle(style);
+//            frame.getMapPane().repaint();
+//            layers.remove(layer);
+//        }
+        Layer layer = frame.getMapContent().layers().get(0);
+        ((FeatureLayer) layer).setStyle(style);
+        frame.getMapPane().repaint();
+    }
+    /**
+     * Create a default Style for feature display
+     */
+    private Style createDefaultStyle() {
+        Rule rule = createRule(LINE_COLOUR, FILL_COLOUR, DEFAULT_OPACITY);
+
+        FeatureTypeStyle fts = sf.createFeatureTypeStyle();
+        fts.rules().add(rule);
+
+        Style style = sf.createStyle();
+        style.featureTypeStyles().add(fts);
+        return style;
+    }
+
+    /**
+     * Create a Style where features with given IDs are painted yellow, while others are painted
+     * with the default colors.
+     */
+    private Style createSelectedStyle(Set<FeatureId> IDs) {
+        Rule selectedRule = createRule(SELECTED_COLOUR, SELECTED_COLOUR, OPACITY);
+        selectedRule.setFilter(ff.id(IDs));
+
+        Rule otherRule = createRule(LINE_COLOUR, FILL_COLOUR, DEFAULT_OPACITY);
+        otherRule.setElseFilter(true);
+
+        FeatureTypeStyle fts = sf.createFeatureTypeStyle();
+        fts.rules().add(selectedRule);
+        fts.rules().add(otherRule);
+
+        Style style = sf.createStyle();
+        style.featureTypeStyles().add(fts);
+        return style;
+    }
+
+    /**
+     * Helper for createXXXStyle methods. Creates a new Rule containing a Symbolizer tailored to the
+     * geometry type of the features that we are displaying.
+     */
+    private Rule createRule(Color outlineColor, Color fillColor, float fillOpacity) {
+        Symbolizer symbolizer = null;
+        Fill fill = null;
+        Stroke stroke = sf.createStroke(ff.literal(outlineColor), ff.literal(LINE_WIDTH));
+
+        //setGeometry();
+        switch (geometryType) {
+            case POLYGON:
+                fill = sf.createFill(ff.literal(fillColor), ff.literal(fillOpacity));
+                symbolizer = sf.createPolygonSymbolizer(stroke, fill, geometryAttributeName);
+                break;
+
+            case LINE:
+                symbolizer = sf.createLineSymbolizer(stroke, geometryAttributeName);
+                break;
+
+            case POINT:
+                fill = sf.createFill(ff.literal(fillColor), ff.literal(OPACITY));
+
+                Mark mark = sf.getCircleMark();
+                mark.setFill(fill);
+                mark.setStroke(stroke);
+
+                Graphic graphic = sf.createDefaultGraphic();
+                graphic.graphicalSymbols().clear();
+                graphic.graphicalSymbols().add(mark);
+                graphic.setSize(ff.literal(POINT_SIZE));
+
+                symbolizer = sf.createPointSymbolizer(graphic, geometryAttributeName);
+        }
+
+        Rule rule = sf.createRule();
+        rule.symbolizers().add(symbolizer);
+        return rule;
+    }
+
+    /**
+     * Retrieve information about the feature geometry
+     */
+    private void setGeometry() {
+        GeometryDescriptor geomDesc = featureSource.getSchema().getGeometryDescriptor();
+        geometryAttributeName = geomDesc.getLocalName();
+
+        Class<?> clazz = geomDesc.getType().getBinding();
+
+        if (org.locationtech.jts.geom.Polygon.class.isAssignableFrom(clazz) || MultiPolygon.class.isAssignableFrom(clazz)) {
+            geometryType = GISTool.GeomType.POLYGON;
+
+        } else if (LineString.class.isAssignableFrom(clazz)
+                || MultiLineString.class.isAssignableFrom(clazz)) {
+
+            geometryType = GISTool.GeomType.LINE;
+
+        } else {
+            geometryType = GISTool.GeomType.POINT;
+        }
+    }
+    private void initQueryLabModified(){
+        queryLab.setDataStore(store);
+        try {
+            queryLab.updateUI();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
